@@ -306,8 +306,13 @@
   .p-chip{
     background:var(--ink); color:var(--cream);
     border-radius:14px; padding:4px 11px; font-size:12px; font-weight:600;
+    display:inline-flex; align-items:center; gap:6px;
   }
   .p-chip.none{background:transparent; border:1.5px dashed var(--line); color:var(--ink-soft);}
+  .p-chip .p-chip-x{
+    cursor:pointer; font-weight:700; opacity:0.7; font-size:11px;
+  }
+  .p-chip .p-chip-x:active{opacity:1; color:var(--coral);}
 
   .card-actions{display:flex; gap:8px; margin-top:12px;}
   .btn{
@@ -498,7 +503,7 @@
 
     <div class="step active" id="voteStep1">
       <h2>Ton prénom ?</h2>
-      <input type="text" id="voteName" placeholder="Ex : Maimouna">
+      <input type="text" id="voteName" placeholder="Ex : Lilith">
       <button class="btn primary block" style="width:100%" onclick="voteNext()">Suivant →</button>
     </div>
 
@@ -593,7 +598,7 @@
 
     <div class="step active" id="restoVoteStep1">
       <h2>Ton prénom ?</h2>
-      <input type="text" id="restoVoteName" placeholder="Ex : Maimouna">
+      <input type="text" id="restoVoteName" placeholder="Ex : Lilith">
       <button class="btn primary block" style="width:100%" onclick="restoVoteNext()">Suivant →</button>
     </div>
 
@@ -697,7 +702,7 @@ const SEED = [
   {id:'s15', titre:'Soirée Karaoké — Music Room chez Wanderlust', lieu:'5 impasse de la Vallée de Fécamp, Paris 12e (Porte de Charenton)', infos:"Leur Music Room propose karaoké, blind-test et jeux de danse en salle privative.", prix:"Sur devis, salle privative", lien:'', tags:['Musique','Soirée'], date:null, statut:'avenir', envies:[], votes:[], participants:[]},
   {id:'s16', titre:'Paddle', lieu:'Base la plus proche à définir ensemble', infos:"Notre activité fétiche, déjà lancée par le groupe ! À refaire dès que le soleil est de la partie.", prix:"Variable selon la base", lien:'', tags:['Sport','Outdoor'], date:'régulier — déjà lancé !', statut:'date', envies:[], votes:[], participants:[]},
   {id:'s17', titre:'Soirée Jazz — Rue des Lombards', lieu:'Rue des Lombards, Paris 1er (à deux pas de Châtelet)', infos:"LE quartier jazz de Paris : Le Duc des Lombards, le Sunside/Sunset ou le Baiser Salé enchaînent les concerts live tous les soirs.", prix:"Entrée ~15-25€ selon le club et le concert", lien:'', tags:['Musique','Soirée'], date:null, statut:'avenir', envies:[], votes:[], participants:[]},
-  {id:'s18', titre:'Randonnée (Destination à Choisir)', lieu:'À définir ensemble', infos:"L'itinéraire n'est pas encore choisi — le lien du carnet de rando arrive bientôt !", prix:'', lien:'https://maimounabrd.github.io/carnet-de-rando/', tags:['Outdoor','Sport'], date:null, statut:'avenir', envies:[], votes:[], participants:[]},
+  {id:'s18', titre:'Randonnée (Destination à Choisir)', lieu:'À définir ensemble', infos:"L'itinéraire n'est pas encore choisi — le lien du carnet de rando arrive bientôt !", prix:'', lien:'', tags:['Outdoor','Sport'], date:null, statut:'avenir', envies:[], votes:[], participants:[]},
   {id:'s19', titre:'Château de Chambord', lieu:'Chambord, Loir-et-Cher (~1h45 de Paris en voiture, ou train jusqu\'à Blois + navette)', infos:"Le plus grand château de la Loire, avec son célèbre escalier à double révolution attribué à Léonard de Vinci. Sur le domaine : balade en barque sur le canal royal, vélo, spectacles équestres et de fauconnerie. Une journée complète de dépaysement !", prix:"~21€/pers (résidents UE/EEE), gratuit pour les moins de 26 ans de l'UE", lien:'', tags:['Culture','Outdoor'], date:null, statut:'avenir', envies:[], votes:[], participants:[]},
   {id:'s20', titre:'Château de Versailles', lieu:'Versailles, Yvelines (RER C depuis Paris, ~45 min)', infos:"Le palais de Louis XIV, la Galerie des Glaces, les jardins à la française... Coup de cœur repéré : les Grandes Eaux Nocturnes tous les samedis soirs de juin à septembre — fontaines illuminées, musique baroque et feu d'artifice sur le Grand Canal. Une édition spéciale Harry Potter est même prévue le 29 août 2026 !", prix:"Billet Passeport ~22-32€/pers selon saison (gratuit moins de 26 ans UE) ; Grandes Eaux Nocturnes ~32€/pers", lien:'', tags:['Culture','Outdoor'], date:null, statut:'avenir', envies:[], votes:[], participants:[]}
 ];
@@ -920,7 +925,7 @@ function render(){
     const prixHtml = s.prix ? `<div class="prix">💶 ${s.prix}</div>` : '';
 
     const participantsHtml = s.participants.length
-      ? `<div class="p-chips">${s.participants.map(p=>`<span class="p-chip">${p}</span>`).join('')}</div>`
+      ? `<div class="p-chips">${s.participants.map(p=>`<span class="p-chip">${p}<span class="p-chip-x" onclick="removeVote('${s.id}', '${p.replace(/'/g, "\\'")}')" title="Retirer">✕</span></span>`).join('')}</div>`
       : `<div class="p-chips"><span class="p-chip none">Personne ne s'est encore positionné</span></div>`;
 
     return `
@@ -1468,6 +1473,21 @@ async function deleteSortie(id){
   renderSouvenirs();
   if(saved){
     toast('Supprimée 🗑️');
+  }
+}
+
+async function removeVote(sortieId, displayName){
+  const s = data.find(x=>x.id===sortieId);
+  if(!s) return;
+  const baseName = displayName.replace(/ \(\?\)$/, '');
+  if(!confirm(`Retirer le vote de ${baseName} ?`)) return;
+  s.participants = s.participants.filter(p=>p!==displayName);
+  s.envies = s.envies.filter(e=>e.name!==baseName);
+  s.votes = s.votes.filter(v=>v.name!==baseName);
+  const saved = await saveData();
+  render();
+  if(saved){
+    toast('Vote retiré 🗑️');
   }
 }
 
