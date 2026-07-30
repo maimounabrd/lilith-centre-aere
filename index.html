@@ -106,6 +106,32 @@
   }
   .stat-pill b{color:var(--coral-dark);}
 
+  /* TABS */
+  .tab-switch{
+    display:flex; gap:6px; padding:14px 16px 2px; justify-content:center;
+  }
+  .tab-btn{
+    font-family:'Baloo 2',cursive; font-weight:700; font-size:12.5px;
+    background:var(--paper); border:2px solid var(--ink); border-radius:14px;
+    padding:8px 8px; cursor:pointer;
+    box-shadow:2px 2px 0 rgba(4,60,53,0.15);
+    flex:1; max-width:160px;
+  }
+  .tab-btn.active{background:var(--coral); color:#fff;}
+
+  .search-bar{padding:2px 16px 0;}
+  .search-bar input{
+    width:100%; padding:10px 14px; border-radius:14px;
+    border:2px solid var(--line); font-family:'Quicksand',sans-serif;
+    font-size:14px; font-weight:600; background:var(--paper);
+  }
+
+  .error-state{
+    margin:16px; padding:20px; text-align:center;
+    background:var(--paper); border:2px dashed var(--coral); border-radius:16px;
+  }
+  .error-state p{font-weight:700; color:var(--ink); margin:0 0 12px;}
+
   /* FILTERS */
   .filters{
     padding:14px 16px 4px;
@@ -341,11 +367,21 @@
   <p class="hero-sub">📎 le carnet de bord de nos sorties d'été</p>
 </div>
 
+<div class="tab-switch">
+  <button class="tab-btn active" id="tabSorties">🎉 Sorties</button>
+  <button class="tab-btn" id="tabRestos">🍽️ Restos</button>
+  <button class="tab-btn" id="tabSouvenirs">📸 Souvenirs</button>
+</div>
+
+<div id="sortiesView">
+
 <div class="filters">
   <button class="filter-btn" id="filterBtn">🔎 Filtrer<span class="filter-badge" id="filterBadge" style="display:none;"></span></button>
   <button class="filter-btn" id="sortBtn">❤️ Coup de cœur</button>
   <span class="filter-result" id="filterResultInline"></span>
 </div>
+
+<div class="search-bar"><input type="text" id="searchSorties" placeholder="🔍 Rechercher une sortie..."></div>
 
 <div class="stats-row" id="statsRow"></div>
 
@@ -355,7 +391,37 @@
   <div class="empty">Chargement du carnet de bord...</div>
 </main>
 
-<div class="fab" id="fabAdd" title="Ajouter une sortie">+</div>
+</div>
+
+<div id="restosView" style="display:none;">
+
+<div class="filters">
+  <button class="filter-btn" id="restoFilterBtn">🔎 Filtrer<span class="filter-badge" id="restoFilterBadge" style="display:none;"></span></button>
+  <button class="filter-btn" id="restoSortBtn">❤️ Coup de cœur</button>
+  <span class="filter-result" id="restoFilterResultInline"></span>
+</div>
+
+<div class="search-bar"><input type="text" id="searchRestos" placeholder="🔍 Rechercher une adresse..."></div>
+
+<div class="stats-row" id="restoStatsRow"></div>
+
+<main id="restoCardList">
+  <div class="empty">Chargement des bonnes adresses...</div>
+</main>
+
+</div>
+
+<div id="souvenirsView" style="display:none;">
+
+<div class="search-bar"><input type="text" id="searchSouvenirs" placeholder="🔍 Rechercher un souvenir..."></div>
+
+<main id="souvenirsCardList">
+  <div class="empty">Chargement des souvenirs...</div>
+</main>
+
+</div>
+
+<div class="fab" id="fabAdd" title="Ajouter">+</div>
 <div class="toast" id="toast"></div>
 
 <div class="overlay" id="filterOverlay" style="display:none;">
@@ -455,6 +521,100 @@
   </div>
 </div>
 
+<div class="overlay" id="restoFilterOverlay" style="display:none;">
+  <div class="sheet">
+    <div class="sheet-close"><span id="closeRestoFilter">✕</span></div>
+    <h2 style="text-align:center; margin-top:0;">Filtrer les restos</h2>
+    <div class="form-field">
+      <label>Statut</label>
+      <div class="filter-wrap" id="restoStatusFilters">
+        <div class="chip tag-status" data-status="all">Tous</div>
+        <div class="chip tag-status" data-status="valide">Validés</div>
+        <div class="chip tag-status" data-status="a_valider">À valider</div>
+      </div>
+    </div>
+    <div class="form-field">
+      <label>Type</label>
+      <div class="filter-wrap" id="restoTagFilters"></div>
+    </div>
+    <button class="btn primary block" style="width:100%; margin-top:6px;" id="applyRestoFilterBtn">Voir les résultats</button>
+    <div class="reset-filters" id="resetRestoFilters">Réinitialiser les filtres</div>
+  </div>
+</div>
+
+<div class="overlay" id="restoVoteOverlay" style="display:none;">
+  <div class="sheet">
+    <div class="sheet-close"><span id="closeRestoVote">✕</span></div>
+    <div class="progress-dots" id="restoVoteDots"></div>
+
+    <div class="step active" id="restoVoteStep1">
+      <h2>Ton prénom ?</h2>
+      <input type="text" id="restoVoteName" placeholder="Ex : Maimouna">
+      <button class="btn primary block" style="width:100%" onclick="restoVoteNext()">Suivant →</button>
+    </div>
+
+    <div class="step" id="restoVoteStep2">
+      <h2>T'en penses quoi ?</h2>
+      <div class="opt-grid" id="restoVoteInterest">
+        <div class="opt-btn" data-val="teste">✅ Déjà testé, j'approuve</div>
+        <div class="opt-btn" data-val="envie">😍 Pas encore testé, trop envie</div>
+      </div>
+    </div>
+
+    <div class="step" id="restoVoteStep3">
+      <h2>Ta note ?</h2>
+      <div class="star-picker" id="restoStarPicker">
+        <span data-v="1">★</span><span data-v="2">★</span><span data-v="3">★</span><span data-v="4">★</span><span data-v="5">★</span>
+      </div>
+      <button class="btn primary block" style="width:100%; margin-top:14px;" onclick="submitRestoVote()">Valider ✓</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="restoAddOverlay" style="display:none;">
+  <div class="sheet">
+    <div class="sheet-close"><span id="closeRestoAdd">✕</span></div>
+    <h2 style="text-align:center; margin-top:0;">Nouvelle bonne adresse</h2>
+    <div class="form-field">
+      <label>Nom</label>
+      <input type="text" id="newRestoNom" placeholder="Ex : Le Petit Bouillon">
+    </div>
+    <div class="form-field">
+      <label>Adresse</label>
+      <input type="text" id="newRestoAdresse" placeholder="Ex : 12 rue de la Paix, Paris 2e">
+    </div>
+    <div class="form-field">
+      <label>Infos pratiques (optionnel)</label>
+      <input type="text" id="newRestoInfos" placeholder="Ex : Terrasse, réservation conseillée">
+    </div>
+    <div class="form-field">
+      <label>Prix (optionnel)</label>
+      <input type="text" id="newRestoPrix" placeholder="Ex : ~20€/pers">
+    </div>
+    <div class="form-field">
+      <label>Lien (optionnel)</label>
+      <input type="text" id="newRestoLink" placeholder="https://...">
+    </div>
+    <div class="form-field">
+      <label>Type</label>
+      <div class="tag-toggle-grid" id="newRestoTagGrid"></div>
+    </div>
+    <button class="btn primary block" style="width:100%; margin-top:6px;" onclick="submitNewResto()">Ajouter au carnet 🍽️</button>
+  </div>
+</div>
+
+<div class="overlay" id="doneOverlay" style="display:none;">
+  <div class="sheet">
+    <div class="sheet-close"><span id="closeDone">✕</span></div>
+    <h2 style="text-align:center; margin-top:0;">On l'a fait ! 🎉</h2>
+    <div class="form-field">
+      <label>Un petit souvenir à garder (optionnel)</label>
+      <input type="text" id="doneNote" placeholder="Ex : Trop drôle, Sarah a gagné le tournoi !">
+    </div>
+    <button class="btn primary block" style="width:100%; margin-top:6px;" onclick="submitDone()">Ajouter aux souvenirs 📸</button>
+  </div>
+</div>
+
 <!-- ============================================================
      CONFIG FIREBASE — à remplir avec tes propres identifiants
      (Console Firebase > Paramètres du projet > Vos applications)
@@ -491,6 +651,21 @@ const SEED = [
   {id:'s20', titre:'Château de Versailles', lieu:'Versailles, Yvelines (RER C depuis Paris, ~45 min)', infos:"Le palais de Louis XIV, la Galerie des Glaces, les jardins à la française... Coup de cœur repéré : les Grandes Eaux Nocturnes tous les samedis soirs de juin à septembre — fontaines illuminées, musique baroque et feu d'artifice sur le Grand Canal. Une édition spéciale Harry Potter est même prévue le 29 août 2026 !", prix:"Billet Passeport ~22-32€/pers selon saison (gratuit moins de 26 ans UE) ; Grandes Eaux Nocturnes ~32€/pers", lien:'', tags:['Culture','Outdoor'], date:null, statut:'avenir', envies:[], votes:[], participants:[]}
 ];
 
+const RESTO_STORAGE_KEY = 'restos-lilith-v1';
+const RESTO_ALL_TAGS = ['Rooftop','Brunch','Italien','Asiatique','Fast-food','Végé','Dessert / Café','Bar à cocktails'];
+const RESTO_SEED = [];
+
+let restoData = [];
+let activeRestoTagFilters = new Set();
+let activeRestoStatusFilter = 'all';
+let restoSortByEnvie = false;
+let currentRestoVoteId = null;
+let restoVoteState = {name:'', interest:null, stars:0};
+let activeTab = 'sorties';
+let currentDoneId = null;
+let sortiesLoadError = false;
+let restosLoadError = false;
+
 let data = [];
 let activeTagFilters = new Set();
 let activeStatusFilter = 'all';
@@ -514,9 +689,10 @@ async function loadData(){
       data = SEED;
       await saveData();
     }
+    sortiesLoadError = false;
   }catch(e){
     console.error('Erreur de chargement', e);
-    data = SEED;
+    sortiesLoadError = true;
   }
   render();
 }
@@ -531,6 +707,40 @@ async function saveData(){
       return true;
     }catch(e){
       console.error('Erreur de sauvegarde (tentative '+(attempt+1)+')', e);
+      if(attempt<2) await new Promise(r=>setTimeout(r, 700));
+    }
+  }
+  toast("Sauvegarde impossible pour l'instant, réessaie dans un instant");
+  return false;
+}
+
+async function loadRestoData(){
+  try{
+    const snap = await db.collection('lilith-centre-aere').doc(RESTO_STORAGE_KEY).get();
+    if(snap.exists && snap.data() && snap.data().restos){
+      restoData = snap.data().restos;
+    }else{
+      restoData = RESTO_SEED;
+      await saveRestoData();
+    }
+    restosLoadError = false;
+  }catch(e){
+    console.error('Erreur de chargement restos', e);
+    restosLoadError = true;
+  }
+  renderResto();
+}
+
+async function saveRestoData(){
+  for(let attempt=0; attempt<=2; attempt++){
+    try{
+      await db.collection('lilith-centre-aere').doc(RESTO_STORAGE_KEY).set({
+        restos: restoData,
+        updatedAt: new Date().toISOString()
+      });
+      return true;
+    }catch(e){
+      console.error('Erreur de sauvegarde restos (tentative '+(attempt+1)+')', e);
       if(attempt<2) await new Promise(r=>setTimeout(r, 700));
     }
   }
@@ -605,13 +815,24 @@ function openFilterModal(){ document.getElementById('filterOverlay').style.displ
 function closeFilterModal(){ document.getElementById('filterOverlay').style.display='none'; }
 
 function render(){
+  updateTabCounts();
+  const list = document.getElementById('cardList');
+  if(sortiesLoadError){
+    list.innerHTML = `<div class="error-state"><p>⚠️ Impossible de charger le carnet (souci de connexion).</p><button class="btn primary" onclick="loadData()">🔄 Réessayer</button></div>`;
+    return;
+  }
+
   renderStats();
   renderTagFilters();
   renderStatusFilters();
 
+  const query = (document.getElementById('searchSorties').value || '').trim().toLowerCase();
+
   let filtered = data.filter(s=>{
+    if(s.statut==='faite') return false;
     if(activeStatusFilter!=='all' && s.statut!==activeStatusFilter) return false;
     if(activeTagFilters.size>0 && !s.tags.some(t=>activeTagFilters.has(t))) return false;
+    if(query && !(s.titre.toLowerCase().includes(query) || (s.infos||'').toLowerCase().includes(query) || (s.lieu||'').toLowerCase().includes(query))) return false;
     return true;
   });
 
@@ -623,7 +844,6 @@ function render(){
   renderSoonBanner();
   updateFilterButton(filtered.length);
 
-  const list = document.getElementById('cardList');
   if(filtered.length===0){
     list.innerHTML = '<div class="empty">Aucune sortie ne correspond à ce filtre 🏕️</div>';
     return;
@@ -682,7 +902,178 @@ function render(){
         <div class="card-actions">
           <button class="btn primary block" onclick="openVote('${s.id}')">Je me positionne</button>
         </div>
-        ${s.statut==='a_valider' ? `<div class="card-actions"><button class="btn block" style="background:var(--green); width:100%;" onclick="validateSortie('${s.id}')">✅ Valider cette sortie</button></div>` : ''}
+        ${s.statut==='a_valider' ? `<div class="card-actions"><button class="btn block" style="background:var(--green); width:100%;" onclick="validateSortie('${s.id}')">✅ Valider cette sortie</button></div>` : `<div class="card-actions"><button class="btn block" style="width:100%;" onclick="openDone('${s.id}')">🎉 On l'a fait !</button></div>`}
+      </div>
+    `;
+  }).join('');
+}
+
+function updateTabCounts(){
+  document.getElementById('tabSorties').textContent = `🎉 Sorties (${data.filter(s=>s.statut!=='faite').length})`;
+  document.getElementById('tabRestos').textContent = `🍽️ Restos (${restoData.length})`;
+  document.getElementById('tabSouvenirs').textContent = `📸 Souvenirs (${data.filter(s=>s.statut==='faite').length})`;
+}
+
+function renderSouvenirs(){
+  const list = document.getElementById('souvenirsCardList');
+  if(sortiesLoadError){
+    list.innerHTML = `<div class="error-state"><p>⚠️ Impossible de charger les souvenirs (souci de connexion).</p><button class="btn primary" onclick="loadData()">🔄 Réessayer</button></div>`;
+    return;
+  }
+  const query = (document.getElementById('searchSouvenirs').value || '').trim().toLowerCase();
+  let done = data.filter(s=>s.statut==='faite');
+  if(query){
+    done = done.filter(s=> s.titre.toLowerCase().includes(query) || (s.souvenirNote||'').toLowerCase().includes(query));
+  }
+  done = done.slice().sort((a,b)=> (b.souvenirDate||'').localeCompare(a.souvenirDate||''));
+
+  if(done.length===0){
+    list.innerHTML = '<div class="empty">Pas encore de souvenirs — les sorties marquées "faites" arriveront ici ! 📸</div>';
+    return;
+  }
+
+  list.innerHTML = done.map(s=>{
+    const dateStr = s.souvenirDate ? new Date(s.souvenirDate).toLocaleDateString('fr-FR', {day:'numeric', month:'long', year:'numeric'}) : '';
+    return `
+      <div class="card" id="card-${s.id}">
+        <div class="stamp date">${dateStr}</div>
+        <h3>${s.titre}</h3>
+        ${s.lieu ? `<div class="lieu">📍 ${s.lieu}</div>` : ''}
+        ${s.souvenirNote ? `<div class="infos">💬 ${s.souvenirNote}</div>` : ''}
+        <div class="participants">
+          <div class="lbl">Y étaient</div>
+          <div class="p-chips">${s.participants.length ? s.participants.map(p=>`<span class="p-chip">${p}</span>`).join('') : `<span class="p-chip none">Non renseigné</span>`}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function openDone(id){
+  currentDoneId = id;
+  document.getElementById('doneNote').value = '';
+  document.getElementById('doneOverlay').style.display = 'flex';
+}
+document.getElementById('closeDone').onclick = ()=>{ document.getElementById('doneOverlay').style.display='none'; };
+
+async function submitDone(){
+  const s = data.find(x=>x.id===currentDoneId);
+  if(!s) return;
+  s.statut = 'faite';
+  s.souvenirNote = document.getElementById('doneNote').value.trim();
+  s.souvenirDate = new Date().toISOString();
+  const saved = await saveData();
+  document.getElementById('doneOverlay').style.display='none';
+  render();
+  renderSouvenirs();
+  if(saved){
+    toast('Direction les souvenirs ! 📸');
+  }
+}
+
+/* ============== RESTOS ============== */
+function renderRestoTagFilters(){
+  const box = document.getElementById('restoTagFilters');
+  box.innerHTML = RESTO_ALL_TAGS.map(t=>`<div class="chip tag-week ${activeRestoTagFilters.has(t)?'active':''}" data-tag="${t}">${t}</div>`).join('');
+  box.querySelectorAll('.chip').forEach(chip=>{
+    chip.onclick = ()=>{
+      const tag = chip.dataset.tag;
+      if(activeRestoTagFilters.has(tag)) activeRestoTagFilters.delete(tag); else activeRestoTagFilters.add(tag);
+      renderResto();
+    };
+  });
+}
+
+function renderRestoStatusFilters(){
+  document.querySelectorAll('#restoStatusFilters .chip').forEach(chip=>{
+    chip.classList.toggle('active', chip.dataset.status===activeRestoStatusFilter);
+    chip.onclick = ()=>{ activeRestoStatusFilter = chip.dataset.status; renderResto(); };
+  });
+}
+
+function updateRestoFilterButton(filteredCount){
+  const activeCount = activeRestoTagFilters.size + (activeRestoStatusFilter!=='all' ? 1 : 0);
+  const badge = document.getElementById('restoFilterBadge');
+  if(activeCount>0){ badge.style.display='inline-flex'; badge.textContent = activeCount; }
+  else{ badge.style.display='none'; }
+  document.getElementById('restoFilterResultInline').textContent = activeCount>0 ? `${filteredCount} adresse(s)` : '';
+}
+
+function renderRestoStats(){
+  const total = restoData.length;
+  const valides = restoData.filter(r=>r.statut==='valide').length;
+  document.getElementById('restoStatsRow').innerHTML = `
+    <div class="stat-pill"><b>${total}</b> bonnes adresses</div>
+    <div class="stat-pill"><b>${valides}</b> validées</div>
+  `;
+}
+
+function renderResto(){
+  updateTabCounts();
+  const list = document.getElementById('restoCardList');
+  if(restosLoadError){
+    list.innerHTML = `<div class="error-state"><p>⚠️ Impossible de charger les restos (souci de connexion).</p><button class="btn primary" onclick="loadRestoData()">🔄 Réessayer</button></div>`;
+    return;
+  }
+
+  renderRestoStats();
+  renderRestoTagFilters();
+  renderRestoStatusFilters();
+
+  const query = (document.getElementById('searchRestos').value || '').trim().toLowerCase();
+
+  let filtered = restoData.filter(r=>{
+    if(activeRestoStatusFilter!=='all' && r.statut!==activeRestoStatusFilter) return false;
+    if(activeRestoTagFilters.size>0 && !r.tags.some(t=>activeRestoTagFilters.has(t))) return false;
+    if(query && !(r.nom.toLowerCase().includes(query) || (r.infos||'').toLowerCase().includes(query) || (r.adresse||'').toLowerCase().includes(query))) return false;
+    return true;
+  });
+
+  if(restoSortByEnvie){
+    filtered = filtered.slice().sort((a,b)=> avgStars(b) - avgStars(a));
+  }
+  document.getElementById('restoSortBtn').classList.toggle('active', restoSortByEnvie);
+  updateRestoFilterButton(filtered.length);
+
+  if(filtered.length===0){
+    list.innerHTML = '<div class="empty">Aucune adresse pour l\'instant — ajoute la première ! 🍽️</div>';
+    return;
+  }
+
+  list.innerHTML = filtered.map(r=>{
+    const avg = avgStars(r);
+    const stampHtml = r.statut==='a_valider'
+      ? `<div class="stamp avalider">à valider</div>`
+      : `<div class="stamp date">validé</div>`;
+    const linkHtml = r.lien ? `<a class="tiktok-link" href="${r.lien}" target="_blank">🔗 voir le lien</a><br>` : '';
+    const adresseHtml = r.adresse ? `<div class="lieu">📍 ${r.adresse}</div>` : '';
+    const infosHtml = r.infos ? `<div class="infos">${r.infos}</div>` : '';
+    const prixHtml = r.prix ? `<div class="prix">💶 ${r.prix}</div>` : '';
+    const participantsHtml = r.participants.length
+      ? `<div class="p-chips">${r.participants.map(p=>`<span class="p-chip">${p}</span>`).join('')}</div>`
+      : `<div class="p-chips"><span class="p-chip none">Personne n'a encore donné son avis</span></div>`;
+
+    return `
+      <div class="card" id="resto-${r.id}">
+        ${stampHtml}
+        <h3>${r.nom}</h3>
+        <div class="tag-list">${r.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+        ${adresseHtml}
+        ${infosHtml}
+        ${prixHtml}
+        ${linkHtml}
+        <div class="envie-row">
+          <span class="stars" style="color:var(--coral-dark)">${starsDisplay(avg)}</span>
+          <span class="envie-label">${avg? avg.toFixed(1)+'/5 · '+r.envies.length+' avis' : 'pas encore noté'}</span>
+        </div>
+        <div class="participants">
+          <div class="lbl">Qui a testé / a envie</div>
+          ${participantsHtml}
+        </div>
+        <div class="card-actions">
+          <button class="btn primary block" onclick="openVoteResto('${r.id}')">Je donne mon avis</button>
+        </div>
+        ${r.statut==='a_valider' ? `<div class="card-actions"><button class="btn block" style="background:var(--green); width:100%;" onclick="validateResto('${r.id}')">✅ Valider cette adresse</button></div>` : ''}
       </div>
     `;
   }).join('');
@@ -802,8 +1193,164 @@ document.getElementById('resetFilters').onclick = ()=>{
   render();
 };
 
-document.getElementById('fabAdd').onclick = openAdd;
+document.getElementById('fabAdd').onclick = ()=>{ activeTab==='sorties' ? openAdd() : openAddResto(); };
 document.getElementById('closeAdd').onclick = ()=>{ document.getElementById('addOverlay').style.display='none'; };
+
+function switchTab(tab){
+  activeTab = tab;
+  document.getElementById('tabSorties').classList.toggle('active', tab==='sorties');
+  document.getElementById('tabRestos').classList.toggle('active', tab==='restos');
+  document.getElementById('tabSouvenirs').classList.toggle('active', tab==='souvenirs');
+  document.getElementById('sortiesView').style.display = tab==='sorties' ? 'block' : 'none';
+  document.getElementById('restosView').style.display = tab==='restos' ? 'block' : 'none';
+  document.getElementById('souvenirsView').style.display = tab==='souvenirs' ? 'block' : 'none';
+  document.getElementById('fabAdd').style.display = tab==='souvenirs' ? 'none' : 'flex';
+  document.getElementById('fabAdd').title = tab==='sorties' ? 'Ajouter une sortie' : 'Ajouter une adresse';
+  if(tab==='souvenirs') renderSouvenirs();
+}
+document.getElementById('tabSorties').onclick = ()=>switchTab('sorties');
+document.getElementById('tabRestos').onclick = ()=>switchTab('restos');
+document.getElementById('tabSouvenirs').onclick = ()=>switchTab('souvenirs');
+
+document.getElementById('searchSorties').addEventListener('input', render);
+document.getElementById('searchRestos').addEventListener('input', renderResto);
+document.getElementById('searchSouvenirs').addEventListener('input', renderSouvenirs);
+
+/* --- RESTO FILTER MODAL --- */
+function openRestoFilterModal(){ document.getElementById('restoFilterOverlay').style.display='flex'; }
+function closeRestoFilterModal(){ document.getElementById('restoFilterOverlay').style.display='none'; }
+document.getElementById('restoFilterBtn').onclick = openRestoFilterModal;
+document.getElementById('restoSortBtn').onclick = ()=>{ restoSortByEnvie = !restoSortByEnvie; renderResto(); };
+document.getElementById('closeRestoFilter').onclick = closeRestoFilterModal;
+document.getElementById('applyRestoFilterBtn').onclick = closeRestoFilterModal;
+document.getElementById('resetRestoFilters').onclick = ()=>{
+  activeRestoTagFilters.clear();
+  activeRestoStatusFilter = 'all';
+  renderResto();
+};
+
+/* --- RESTO VOTE FLOW --- */
+function openVoteResto(id){
+  currentRestoVoteId = id;
+  restoVoteState = {name:'', interest:null, stars:0};
+  document.querySelectorAll('#restoVoteInterest .opt-btn').forEach(b=>b.classList.remove('chosen'));
+  document.querySelectorAll('#restoStarPicker span').forEach(s=>s.classList.remove('lit'));
+  document.getElementById('restoVoteName').value = '';
+  goToRestoStep(1);
+  document.getElementById('restoVoteOverlay').style.display = 'flex';
+}
+function closeRestoVoteModal(){ document.getElementById('restoVoteOverlay').style.display = 'none'; }
+document.getElementById('closeRestoVote').onclick = closeRestoVoteModal;
+
+function goToRestoStep(n){
+  for(let i=1;i<=3;i++){
+    document.getElementById('restoVoteStep'+i).classList.toggle('active', i===n);
+  }
+  const dots = document.getElementById('restoVoteDots');
+  dots.innerHTML = [1,2,3].map(i=>`<div class="dot ${i===n?'on':''}"></div>`).join('');
+}
+function restoVoteNext(){
+  const name = document.getElementById('restoVoteName').value.trim();
+  if(!name){ toast('Indique ton prénom pour continuer'); return; }
+  restoVoteState.name = name;
+  goToRestoStep(2);
+}
+document.getElementById('restoVoteOverlay').addEventListener('click', function(e){
+  const interestBtn = e.target.closest('#restoVoteInterest .opt-btn');
+  if(interestBtn){
+    document.querySelectorAll('#restoVoteInterest .opt-btn').forEach(b=>b.classList.remove('chosen'));
+    interestBtn.classList.add('chosen');
+    restoVoteState.interest = interestBtn.dataset.val;
+    setTimeout(()=>goToRestoStep(3), 200);
+    return;
+  }
+  const star = e.target.closest('#restoStarPicker span');
+  if(star){
+    const v = parseInt(star.dataset.v);
+    restoVoteState.stars = v;
+    document.querySelectorAll('#restoStarPicker span').forEach(s=>{
+      s.classList.toggle('lit', parseInt(s.dataset.v)<=v);
+    });
+  }
+});
+document.getElementById('restoVoteName').addEventListener('keydown', function(e){
+  if(e.key==='Enter'){ restoVoteNext(); }
+});
+
+async function submitRestoVote(){
+  if(!restoVoteState.stars){ toast("Choisis un nombre d'étoiles"); return; }
+  const r = restoData.find(x=>x.id===currentRestoVoteId);
+  if(!r) return;
+
+  r.envies = r.envies.filter(e=>e.name!==restoVoteState.name);
+  r.envies.push({name:restoVoteState.name, stars:restoVoteState.stars});
+
+  r.participants = r.participants.filter(p=>p!==restoVoteState.name && p!==restoVoteState.name+' (envie)');
+  r.participants.push(restoVoteState.interest==='envie' ? restoVoteState.name+' (envie)' : restoVoteState.name);
+
+  const saved = await saveRestoData();
+  closeRestoVoteModal();
+  renderResto();
+  if(saved){
+    toast("Merci " + restoVoteState.name + " ! 🍽️");
+  }
+}
+
+/* --- ADD RESTO --- */
+let newRestoTags = new Set();
+function openAddResto(){
+  document.getElementById('newRestoNom').value='';
+  document.getElementById('newRestoAdresse').value='';
+  document.getElementById('newRestoInfos').value='';
+  document.getElementById('newRestoPrix').value='';
+  document.getElementById('newRestoLink').value='';
+  newRestoTags = new Set();
+  const grid = document.getElementById('newRestoTagGrid');
+  grid.innerHTML = RESTO_ALL_TAGS.map(t=>`<div class="tag-toggle" data-tag="${t}">${t}</div>`).join('');
+  grid.querySelectorAll('.tag-toggle').forEach(el=>{
+    el.onclick = ()=>{
+      const t = el.dataset.tag;
+      if(newRestoTags.has(t)){ newRestoTags.delete(t); el.classList.remove('on'); }
+      else{ newRestoTags.add(t); el.classList.add('on'); }
+    };
+  });
+  document.getElementById('restoAddOverlay').style.display='flex';
+}
+document.getElementById('closeRestoAdd').onclick = ()=>{ document.getElementById('restoAddOverlay').style.display='none'; };
+
+async function submitNewResto(){
+  const nom = document.getElementById('newRestoNom').value.trim();
+  if(!nom){ toast('Donne un nom à cette adresse'); return; }
+  const adresse = document.getElementById('newRestoAdresse').value.trim();
+  const infos = document.getElementById('newRestoInfos').value.trim();
+  const prix = document.getElementById('newRestoPrix').value.trim();
+  const lien = document.getElementById('newRestoLink').value.trim();
+  const newR = {
+    id: 'r'+Date.now(),
+    nom, adresse, infos, prix, lien,
+    tags: Array.from(newRestoTags),
+    statut: 'a_valider',
+    envies: [], participants: []
+  };
+  restoData.unshift(newR);
+  const saved = await saveRestoData();
+  document.getElementById('restoAddOverlay').style.display='none';
+  renderResto();
+  if(saved){
+    toast('Proposée ! En attente de validation ✨');
+  }
+}
+
+async function validateResto(id){
+  const r = restoData.find(x=>x.id===id);
+  if(!r) return;
+  r.statut = 'valide';
+  const saved = await saveRestoData();
+  renderResto();
+  if(saved){
+    toast('Adresse validée, elle est officielle ! 🍽️');
+  }
+}
 
 async function submitNewSortie(){
   const titre = document.getElementById('newTitle').value.trim();
@@ -842,6 +1389,7 @@ async function validateSortie(id){
 }
 
 loadData();
+loadRestoData();
 </script>
 </body>
 </html>
