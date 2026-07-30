@@ -248,6 +248,15 @@
   .stamp.avenir{background:var(--sky); color:var(--sky-dark);}
   .stamp.orga{background:var(--yellow); color:var(--yellow-dark);}
   .stamp.avalider{background:var(--coral); color:#fff;}
+  .delete-x{
+    position:absolute; top:-10px; left:14px;
+    width:24px; height:24px; border-radius:50%;
+    background:var(--paper); border:2px solid var(--ink-soft);
+    color:var(--ink-soft); font-size:12px; font-weight:700;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; z-index:2;
+  }
+  .delete-x:active{background:var(--coral); color:#fff; border-color:var(--ink);}
 
   .card h3{margin:6px 0 6px; font-size:18px; padding-right:70px;}
   .tag-list{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px;}
@@ -688,7 +697,7 @@ const SEED = [
   {id:'s15', titre:'Soirée Karaoké — Music Room chez Wanderlust', lieu:'5 impasse de la Vallée de Fécamp, Paris 12e (Porte de Charenton)', infos:"Leur Music Room propose karaoké, blind-test et jeux de danse en salle privative.", prix:"Sur devis, salle privative", lien:'', tags:['Musique','Soirée'], date:null, statut:'avenir', envies:[], votes:[], participants:[]},
   {id:'s16', titre:'Paddle', lieu:'Base la plus proche à définir ensemble', infos:"Notre activité fétiche, déjà lancée par le groupe ! À refaire dès que le soleil est de la partie.", prix:"Variable selon la base", lien:'', tags:['Sport','Outdoor'], date:'régulier — déjà lancé !', statut:'date', envies:[], votes:[], participants:[]},
   {id:'s17', titre:'Soirée Jazz — Rue des Lombards', lieu:'Rue des Lombards, Paris 1er (à deux pas de Châtelet)', infos:"LE quartier jazz de Paris : Le Duc des Lombards, le Sunside/Sunset ou le Baiser Salé enchaînent les concerts live tous les soirs.", prix:"Entrée ~15-25€ selon le club et le concert", lien:'', tags:['Musique','Soirée'], date:null, statut:'avenir', envies:[], votes:[], participants:[]},
-  {id:'s18', titre:'Randonnée (Destination à Choisir)', lieu:'À définir ensemble', infos:"L'itinéraire n'est pas encore choisi — le lien du carnet de rando arrive bientôt !", prix:'', lien:'', tags:['Outdoor','Sport'], date:null, statut:'avenir', envies:[], votes:[], participants:[]},
+  {id:'s18', titre:'Randonnée (Destination à Choisir)', lieu:'À définir ensemble', infos:"L'itinéraire n'est pas encore choisi — le lien du carnet de rando arrive bientôt !", prix:'', lien:'https://maimounabrd.github.io/carnet-de-rando/', tags:['Outdoor','Sport'], date:null, statut:'avenir', envies:[], votes:[], participants:[]},
   {id:'s19', titre:'Château de Chambord', lieu:'Chambord, Loir-et-Cher (~1h45 de Paris en voiture, ou train jusqu\'à Blois + navette)', infos:"Le plus grand château de la Loire, avec son célèbre escalier à double révolution attribué à Léonard de Vinci. Sur le domaine : balade en barque sur le canal royal, vélo, spectacles équestres et de fauconnerie. Une journée complète de dépaysement !", prix:"~21€/pers (résidents UE/EEE), gratuit pour les moins de 26 ans de l'UE", lien:'', tags:['Culture','Outdoor'], date:null, statut:'avenir', envies:[], votes:[], participants:[]},
   {id:'s20', titre:'Château de Versailles', lieu:'Versailles, Yvelines (RER C depuis Paris, ~45 min)', infos:"Le palais de Louis XIV, la Galerie des Glaces, les jardins à la française... Coup de cœur repéré : les Grandes Eaux Nocturnes tous les samedis soirs de juin à septembre — fontaines illuminées, musique baroque et feu d'artifice sur le Grand Canal. Une édition spéciale Harry Potter est même prévue le 29 août 2026 !", prix:"Billet Passeport ~22-32€/pers selon saison (gratuit moins de 26 ans UE) ; Grandes Eaux Nocturnes ~32€/pers", lien:'', tags:['Culture','Outdoor'], date:null, statut:'avenir', envies:[], votes:[], participants:[]}
 ];
@@ -916,6 +925,7 @@ function render(){
 
     return `
       <div class="card" id="card-${s.id}">
+        <div class="delete-x" onclick="deleteSortie('${s.id}')" title="Supprimer">✕</div>
         ${stampHtml}
         <h3>${s.titre}</h3>
         <div class="tag-list">${s.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
@@ -978,6 +988,7 @@ function renderSouvenirs(){
     const dateStr = s.souvenirDate ? new Date(s.souvenirDate).toLocaleDateString('fr-FR', {day:'numeric', month:'long', year:'numeric'}) : '';
     return `
       <div class="card" id="card-${s.id}">
+        <div class="delete-x" onclick="deleteSortie('${s.id}')" title="Supprimer">✕</div>
         <div class="stamp date">${dateStr}</div>
         <h3>${s.titre}</h3>
         ${s.lieu ? `<div class="lieu">📍 ${s.lieu}</div>` : ''}
@@ -1100,6 +1111,7 @@ function renderResto(){
 
     return `
       <div class="card" id="resto-${r.id}">
+        <div class="delete-x" onclick="deleteResto('${r.id}')" title="Supprimer">✕</div>
         ${stampHtml}
         <h3>${r.nom}</h3>
         <div class="tag-list">${r.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
@@ -1398,6 +1410,18 @@ async function validateResto(id){
   }
 }
 
+async function deleteResto(id){
+  const r = restoData.find(x=>x.id===id);
+  if(!r) return;
+  if(!confirm(`Supprimer "${r.nom}" ? Cette action est définitive.`)) return;
+  restoData = restoData.filter(x=>x.id!==id);
+  const saved = await saveRestoData();
+  renderResto();
+  if(saved){
+    toast('Adresse supprimée 🗑️');
+  }
+}
+
 async function submitNewSortie(){
   const titre = document.getElementById('newTitle').value.trim();
   if(!titre){ toast('Donne un titre à la sortie'); return; }
@@ -1431,6 +1455,19 @@ async function validateSortie(id){
   render();
   if(saved){
     toast('Sortie validée, elle est officielle ! 🏕️');
+  }
+}
+
+async function deleteSortie(id){
+  const s = data.find(x=>x.id===id);
+  if(!s) return;
+  if(!confirm(`Supprimer "${s.titre}" ? Cette action est définitive.`)) return;
+  data = data.filter(x=>x.id!==id);
+  const saved = await saveData();
+  render();
+  renderSouvenirs();
+  if(saved){
+    toast('Supprimée 🗑️');
   }
 }
 
