@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Lilith Centre Aéré — Nos sorties</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Pacifico&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#FFF8ED;
+    --paper:#FFFDF8;
+    --ink:#043C35;
+    --ink-soft:#4B6E64;
+    --coral:#F1620B;
+    --coral-dark:#93390A;
+    --yellow:#F4A6B6;
+    --yellow-dark:#B5495F;
+    --sky:#9F9FDD;
+    --sky-dark:#3B3480;
+    --green:#D3E6DE;
+    --green-dark:#043C35;
+    --pink:#E37F9B;
+    --pink-dark:#8C3A48;
+    --line:#E6DCC7;
+    --shadow: 4px 4px 0px rgba(4,60,53,0.12);
+    --tape-1:#9F9FDD;
+    --tape-2:#F4A6B6;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--cream);
+    background-image: repeating-linear-gradient(#FFF8ED 0px, #FFF8ED 27px, #E9DFC5 28px);
+    font-family:'Quicksand',sans-serif;
+    color:var(--ink);
+    padding-bottom:100px;
+  }
+  h1,h2,h3,.display{font-family:'Baloo 2',cursive;}
+
+  /* HERO */
+  .hero{
+    position:relative;
+    overflow:hidden;
+    text-align:center;
+    padding:34px 20px 20px;
+    background: linear-gradient(150deg, var(--coral) 0%, var(--pink) 48%, var(--sky) 100%);
+    border-bottom:4px dashed var(--paper);
+  }
+  .hero::before, .hero::after{
+    content:'';
+    position:absolute; border-radius:50%;
+    background:rgba(255,255,255,0.14);
+  }
+  .hero::before{ width:140px; height:140px; top:-60px; left:-40px; }
+  .hero::after{ width:100px; height:100px; bottom:-50px; right:-20px; }
+  .hero-badge{
+    position:relative; z-index:1;
+    width:54px; height:54px; border-radius:50%;
+    background:var(--paper); border:3px solid var(--ink);
+    display:flex; align-items:center; justify-content:center;
+    font-size:26px; margin:0 auto 10px;
+    box-shadow:3px 3px 0 rgba(4,60,53,0.3);
+    transform:rotate(-8deg);
+  }
+  .hero-eyebrow{
+    position:relative; z-index:1;
+    display:inline-block;
+    font-family:'Baloo 2',cursive; font-weight:700;
+    font-size:11px; letter-spacing:1.5px; text-transform:uppercase;
+    color:var(--ink); background:var(--paper);
+    padding:5px 14px; border-radius:20px;
+    border:2px solid var(--ink); margin-bottom:12px;
+    transform:rotate(-2deg);
+  }
+  .hero-title{
+    position:relative; z-index:1;
+    font-family:'Baloo 2',cursive; font-weight:800;
+    font-size:42px; line-height:0.95; color:var(--paper);
+    margin:0; letter-spacing:0.5px;
+    text-shadow: 3px 3px 0 var(--ink);
+  }
+  .hero-script{
+    display:block;
+    font-family:'Pacifico',cursive; font-weight:400;
+    font-size:26px; color:var(--yellow);
+    transform:rotate(-3deg);
+    margin-top:6px;
+    text-shadow: 2px 2px 0 var(--ink);
+  }
+  .hero-sub{
+    position:relative; z-index:1;
+    font-family:'Quicksand'; font-size:13px; font-weight:700;
+    color:var(--paper); margin:12px 0 14px;
+    text-shadow: 1px 1px 0 rgba(4,60,53,0.4);
+  }
+  .stats-row{display:flex; gap:8px; margin:2px 16px 4px; overflow-x:auto;}
+  .stat-pill{
+    background:var(--paper);
+    border:2px solid var(--ink);
+    border-radius:20px; padding:5px 12px;
+    font-size:11.5px; white-space:nowrap; font-weight:700;
+    color:var(--ink);
+    box-shadow:2px 2px 0 rgba(4,60,53,0.15);
+  }
+  .stat-pill b{color:var(--coral-dark);}
+
+  /* FILTERS */
+  .filters{
+    padding:14px 16px 4px;
+    position:sticky; top:0; z-index:15;
+    background:var(--cream);
+    display:flex; align-items:center; gap:10px;
+  }
+  .filter-btn{
+    position:relative;
+    font-family:'Baloo 2',cursive;
+    background:var(--paper); border:2px solid var(--ink);
+    border-radius:20px; padding:8px 16px;
+    font-size:14px; font-weight:700; cursor:pointer;
+    box-shadow:2px 2px 0 rgba(4,60,53,0.15);
+  }
+  .filter-badge{
+    display:inline-flex; align-items:center; justify-content:center;
+    background:var(--coral); color:#fff;
+    border-radius:50%; width:18px; height:18px;
+    font-size:11px; margin-left:6px; position:relative; top:-1px;
+  }
+  .filter-result{font-size:12.5px; color:var(--ink-soft); font-weight:600;}
+  .filter-btn.active{background:var(--yellow);}
+  .soon-banner{
+    margin:10px 16px 4px; padding:10px 14px;
+    background:var(--ink); color:var(--cream);
+    border-radius:14px; cursor:pointer;
+    display:flex; align-items:center; gap:8px;
+    font-size:13px; font-weight:600;
+    border:2px dashed var(--coral);
+  }
+  .soon-banner b{font-family:'Baloo 2',cursive; color:var(--coral); font-weight:700;}
+  .soon-banner .soon-date{color:var(--yellow); font-weight:700; margin-left:auto; white-space:nowrap; font-size:12px;}
+  .filter-wrap{display:flex; flex-wrap:wrap; gap:8px;}
+  .reset-filters{
+    text-align:center; margin-top:14px; font-size:12.5px;
+    color:var(--ink-soft); text-decoration:underline; cursor:pointer;
+  }
+  .chip{
+    flex-shrink:0;
+    background:var(--paper);
+    border:2px solid var(--ink);
+    border-radius:20px;
+    padding:6px 13px;
+    font-size:12.5px; font-weight:700;
+    cursor:pointer; user-select:none;
+    box-shadow:2px 2px 0 rgba(4,60,53,0.15);
+  }
+  .chip.active{background:var(--yellow); }
+  .chip.active.tag-week{background:var(--sky);}
+  .chip.active.tag-status{background:var(--green);}
+
+  /* MAIN */
+  main{padding:8px 16px 0;}
+  .empty{
+    text-align:center; padding:40px 20px; color:var(--ink-soft);
+    font-weight:600;
+  }
+
+  /* CARD */
+  .card{
+    background:var(--paper);
+    border:3px solid var(--ink);
+    border-radius:18px;
+    margin:22px 0 14px;
+    padding:16px;
+    position:relative;
+    box-shadow:var(--shadow);
+  }
+  .card:nth-child(odd){transform:rotate(-0.6deg);}
+  .card:nth-child(even){transform:rotate(0.6deg);}
+  .card::before{
+    content:'';
+    position:absolute; top:-14px; left:24px;
+    width:54px; height:22px;
+    background:repeating-linear-gradient(45deg, var(--tape-1), var(--tape-1) 6px, var(--tape-2) 6px, var(--tape-2) 12px);
+    opacity:0.85;
+    transform:rotate(-4deg);
+    border-radius:2px;
+    box-shadow:1px 1px 2px rgba(4,60,53,0.15);
+  }
+  .stamp{
+    position:absolute; top:-12px; right:14px;
+    font-family:'Baloo 2',cursive;
+    font-size:11px; font-weight:700;
+    padding:5px 10px; border-radius:10px;
+    transform:rotate(4deg);
+    border:2px solid var(--ink);
+    text-transform:uppercase; letter-spacing:0.5px;
+  }
+  .stamp.date{background:var(--green); color:var(--ink);}
+  .stamp.avenir{background:var(--sky); color:var(--sky-dark);}
+  .stamp.orga{background:var(--yellow); color:var(--yellow-dark);}
+  .stamp.avalider{background:var(--coral); color:#fff;}
+
+  .card h3{margin:6px 0 6px; font-size:18px; padding-right:70px;}
+  .tag-list{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px;}
+  .tag{
+    background:var(--cream);
+    border:1.5px solid var(--line);
+    border-radius:12px;
+    padding:3px 9px;
+    font-size:11px; font-weight:700;
+    color:var(--ink-soft);
+  }
+  .tiktok-link{
+    display:inline-flex; align-items:center; gap:5px;
+    font-size:12px; font-weight:700; color:var(--coral-dark);
+    text-decoration:none; margin-bottom:10px;
+  }
+  .lieu{
+    font-size:12px; font-weight:700; color:var(--ink);
+    margin-bottom:4px;
+  }
+  .infos{
+    font-size:12.5px; line-height:1.5; color:var(--ink-soft);
+    margin-bottom:10px;
+  }
+  .prix{
+    display:inline-block;
+    font-size:12px; font-weight:700; color:var(--coral-dark);
+    background:var(--cream); border:1.5px solid var(--line);
+    border-radius:12px; padding:3px 10px; margin-bottom:8px;
+  }
+
+  .envie-row{display:flex; align-items:center; gap:8px; margin:8px 0;}
+  .stars{font-size:17px; letter-spacing:1px;}
+  .envie-label{font-size:12px; color:var(--ink-soft); font-weight:600;}
+
+  .vote-row{display:flex; gap:10px; margin:10px 0; font-size:12px; font-weight:700;}
+  .vote-bar{flex:1; background:var(--cream); border:1.5px solid var(--line); border-radius:10px; padding:6px 10px;}
+  .vote-bar .label{display:flex; justify-content:space-between; margin-bottom:4px; color:var(--ink-soft);}
+  .vote-track{height:6px; background:var(--line); border-radius:4px; overflow:hidden;}
+  .vote-fill{height:100%; border-radius:4px;}
+  .vote-fill.sem{background:var(--sky);}
+  .vote-fill.wkd{background:var(--pink);}
+
+  .participants{margin:10px 0 4px;}
+  .participants .lbl{font-size:11px; color:var(--ink-soft); font-weight:700; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px;}
+  .p-chips{display:flex; flex-wrap:wrap; gap:6px;}
+  .p-chip{
+    background:var(--ink); color:var(--cream);
+    border-radius:14px; padding:4px 11px; font-size:12px; font-weight:600;
+  }
+  .p-chip.none{background:transparent; border:1.5px dashed var(--line); color:var(--ink-soft);}
+
+  .card-actions{display:flex; gap:8px; margin-top:12px;}
+  .btn{
+    font-family:'Baloo 2',cursive;
+    border:3px solid var(--ink); border-radius:14px;
+    padding:9px 14px; font-size:14px; font-weight:700;
+    cursor:pointer; box-shadow:3px 3px 0 rgba(4,60,53,0.18);
+    background:var(--paper); color:var(--ink);
+  }
+  .btn.primary{background:var(--coral); color:#4A1B0C;}
+  .btn.block{flex:1;}
+  .btn:active{transform:translate(2px,2px); box-shadow:1px 1px 0 rgba(4,60,53,0.18);}
+
+  /* FAB */
+  .fab{
+    position:fixed; bottom:20px; right:18px; z-index:25;
+    background:var(--yellow); border:3px solid var(--ink);
+    width:58px; height:58px; border-radius:50%;
+    font-size:26px; font-family:'Baloo 2',cursive;
+    box-shadow:4px 4px 0 rgba(4,60,53,0.25);
+    display:flex; align-items:center; justify-content:center; cursor:pointer;
+  }
+
+  /* MODAL */
+  .overlay{
+    position:fixed; inset:0; background:rgba(4,60,53,0.55);
+    z-index:50; display:flex; align-items:flex-end; justify-content:center;
+  }
+  .sheet{
+    background:var(--paper); width:100%; max-width:480px;
+    border-radius:24px 24px 0 0; padding:22px 20px 26px;
+    max-height:85vh; overflow-y:auto;
+    border-top:4px solid var(--ink);
+  }
+  .sheet-close{
+    display:flex; justify-content:flex-end; margin-bottom:-6px;
+  }
+  .sheet-close span{font-size:22px; cursor:pointer; color:var(--ink-soft); font-weight:700;}
+  .progress-dots{display:flex; gap:6px; justify-content:center; margin:6px 0 18px;}
+  .dot{width:8px; height:8px; border-radius:50%; background:var(--line);}
+  .dot.on{background:var(--coral);}
+  .step{display:none;}
+  .step.active{display:block;}
+  .step h2{font-size:19px; margin:0 0 14px; text-align:center;}
+  .step input[type=text]{
+    width:100%; padding:12px 14px; border-radius:12px; border:2px solid var(--ink);
+    font-family:'Quicksand',sans-serif; font-size:15px; font-weight:600; margin-bottom:12px;
+  }
+  .opt-grid{display:flex; flex-direction:column; gap:10px;}
+  .opt-btn{
+    padding:13px; border-radius:14px; border:2.5px solid var(--ink);
+    font-family:'Baloo 2',cursive; font-size:15px; background:var(--paper);
+    cursor:pointer; text-align:center;
+  }
+  .opt-btn.chosen{background:var(--yellow);}
+  .star-picker{display:flex; justify-content:center; gap:10px; font-size:30px; margin:10px 0 6px; cursor:pointer; color:var(--coral);}
+  .star-picker span{opacity:0.35;}
+  .star-picker span.lit{opacity:1;}
+
+  .form-field{margin-bottom:12px;}
+  .form-field label{font-size:12px; font-weight:700; color:var(--ink-soft); display:block; margin-bottom:5px;}
+  .form-field input[type=text]{
+    width:100%; padding:11px 13px; border-radius:12px; border:2px solid var(--line);
+    font-family:'Quicksand',sans-serif; font-size:14px; font-weight:600;
+  }
+  .tag-toggle-grid{display:flex; flex-wrap:wrap; gap:7px;}
+  .tag-toggle{
+    border:2px solid var(--line); border-radius:14px; padding:6px 12px;
+    font-size:12px; font-weight:700; cursor:pointer; background:var(--cream);
+  }
+  .tag-toggle.on{background:var(--green); border-color:var(--ink);}
+
+  .toast{
+    position:fixed; bottom:90px; left:50%; transform:translateX(-50%);
+    background:var(--ink); color:var(--cream); padding:10px 18px;
+    border-radius:20px; font-size:13px; font-weight:700; z-index:60;
+    opacity:0; transition:opacity 0.25s; pointer-events:none;
+  }
+  .toast.show{opacity:1;}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-badge">🏕️</div>
+  <p class="hero-eyebrow">L'été de folie commence ici</p>
+  <h1 class="hero-title">LILITH<span class="hero-script">centre aéré</span></h1>
+  <p class="hero-sub">📎 le carnet de bord de nos sorties d'été</p>
+</div>
+
+<div class="filters">
+  <button class="filter-btn" id="filterBtn">🔎 Filtrer<span class="filter-badge" id="filterBadge" style="display:none;"></span></button>
+  <button class="filter-btn" id="sortBtn">❤️ Coup de cœur</button>
+  <span class="filter-result" id="filterResultInline"></span>
+</div>
+
+<div class="stats-row" id="statsRow"></div>
+
+<div class="soon-banner" id="soonBanner" style="display:none;"></div>
+
+<main id="cardList">
+  <div class="empty">Chargement du carnet de bord...</div>
+</main>
+
+<div class="fab" id="fabAdd" title="Ajouter une sortie">+</div>
+<div class="toast" id="toast"></div>
+
+<div class="overlay" id="filterOverlay" style="display:none;">
+  <div class="sheet">
+    <div class="sheet-close"><span id="closeFilter">✕</span></div>
+    <h2 style="text-align:center; margin-top:0;">Filtrer les sorties</h2>
+    <div class="form-field">
+      <label>Statut</label>
+      <div class="filter-wrap" id="statusFilters">
+        <div class="chip tag-status" data-status="all">Toutes</div>
+        <div class="chip tag-status" data-status="date">Avec date</div>
+        <div class="chip tag-status" data-status="avenir">À venir</div>
+        <div class="chip tag-status" data-status="orga">En organisation</div>
+        <div class="chip tag-status" data-status="a_valider">À valider</div>
+      </div>
+    </div>
+    <div class="form-field">
+      <label>Tags</label>
+      <div class="filter-wrap" id="tagFilters"></div>
+    </div>
+    <button class="btn primary block" style="width:100%; margin-top:6px;" id="applyFilterBtn">Voir les résultats</button>
+    <div class="reset-filters" id="resetFilters">Réinitialiser les filtres</div>
+  </div>
+</div>
+
+<div class="overlay" id="voteOverlay" style="display:none;">
+  <div class="sheet">
+    <div class="sheet-close"><span id="closeVote">✕</span></div>
+    <div class="progress-dots" id="voteDots"></div>
+
+    <div class="step active" id="voteStep1">
+      <h2>Ton prénom ?</h2>
+      <input type="text" id="voteName" placeholder="Ex : Maimouna">
+      <button class="btn primary block" style="width:100%" onclick="voteNext()">Suivant →</button>
+    </div>
+
+    <div class="step" id="voteStep2">
+      <h2>Tu es chaud·e pour cette sortie ?</h2>
+      <div class="opt-grid" id="voteComing">
+        <div class="opt-btn" data-val="oui">🙌 Carrément, je viens</div>
+        <div class="opt-btn" data-val="peutetre">🤔 Peut-être</div>
+        <div class="opt-btn" data-val="non">😅 Pas pour moi</div>
+      </div>
+    </div>
+
+    <div class="step" id="voteStep3">
+      <h2>Plutôt semaine ou week-end ?</h2>
+      <div class="opt-grid" id="votePeriod">
+        <div class="opt-btn" data-val="semaine">📅 En semaine</div>
+        <div class="opt-btn" data-val="weekend">🎉 Le week-end</div>
+      </div>
+    </div>
+
+    <div class="step" id="voteStep4">
+      <h2>Ton envie sur cette sortie ?</h2>
+      <div class="star-picker" id="starPicker">
+        <span data-v="1">★</span><span data-v="2">★</span><span data-v="3">★</span><span data-v="4">★</span><span data-v="5">★</span>
+      </div>
+      <button class="btn primary block" style="width:100%; margin-top:14px;" onclick="submitVote()">Valider ✓</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="addOverlay" style="display:none;">
+  <div class="sheet">
+    <div class="sheet-close"><span id="closeAdd">✕</span></div>
+    <h2 style="text-align:center; margin-top:0;">Nouvelle idée de sortie</h2>
+    <div class="form-field">
+      <label>Titre de la sortie</label>
+      <input type="text" id="newTitle" placeholder="Ex : Bar à jeux dans le 11e">
+    </div>
+    <div class="form-field">
+      <label>Lieu (optionnel)</label>
+      <input type="text" id="newLieu" placeholder="Ex : 12 rue de la Paix, Paris 2e">
+    </div>
+    <div class="form-field">
+      <label>Infos pratiques (optionnel)</label>
+      <input type="text" id="newInfos" placeholder="Ex : Réservation conseillée">
+    </div>
+    <div class="form-field">
+      <label>Prix (optionnel)</label>
+      <input type="text" id="newPrix" placeholder="Ex : ~20€/pers">
+    </div>
+    <div class="form-field">
+      <label>Lien TikTok (optionnel)</label>
+      <input type="text" id="newLink" placeholder="https://tiktok.com/...">
+    </div>
+    <div class="form-field">
+      <label>Date (optionnel — laisser vide si pas encore fixée)</label>
+      <input type="text" id="newDate" placeholder="Ex : 15 août">
+    </div>
+    <div class="form-field">
+      <label>Tags</label>
+      <div class="tag-toggle-grid" id="newTagGrid"></div>
+    </div>
+    <button class="btn primary block" style="width:100%; margin-top:6px;" onclick="submitNewSortie()">Ajouter au carnet 🏕️</button>
+  </div>
+</div>
+
+<!-- ============================================================
+     CONFIG FIREBASE — à remplir avec tes propres identifiants
+     (Console Firebase > Paramètres du projet > Vos applications)
+     ============================================================ -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyBMu6vBtd-uJ1hIVDRDTF6rCR0DWoJz720",
+    authDomain: "lilith-centre-aere.firebaseapp.com",
+    projectId: "lilith-centre-aere",
+    storageBucket: "lilith-centre-aere.firebasestorage.app",
+    messagingSenderId: "226931927795",
+    appId: "1:226931927795:web:b914c0908cbeb3ea0d2586"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+</script>
+
+<script>
+const STORAGE_KEY = 'sorties-lilith-v7';
+const ALL_TAGS = ['Jeu','Escape game','Adrénaline','Culture','Spectacle','Soirée','Événement','Cinéma','Outdoor','Sport','Détente','Musique','Bar','En pause'];
+
+const SEED = [
+  {id:'s1', titre:'Rush Action Game — Bastille', lieu:'16 rue Amelot, Paris 11e', infos:"Action game en équipe : 10 salles de défis physiques et tactiques sur 200 m², environ 1h. Réservable gratuitement via l'appli Hemblem (si éligibles), sinon sur rushactiongame.fr. Ouvert tous les jours 10h-23h.", prix:"Gratuit via Hemblem (si éligible), sinon tarif standard sur rushactiongame.fr", lien:'', tags:['Jeu','Adrénaline'], date:null, statut:'avenir', envies:[], votes:[], participants:[]},
+  {id:'s2', titre:'Merci Internet — Bar Immersif', lieu:'6 rue Marguerite de Rochechouart, Paris 9e (métro Cadet)', infos:"Bar immersif où les défis viraux d'Internet prennent vie : blind-tests, meilleur alibi, cours de pâtisserie arrosé... Environ 1h de jeu, cocktails et tapas sur place.", prix:"Sur devis, dès 4 joueurs (comptez ~35-40€/pers en formule groupe)", lien:'', tags:['Jeu','Bar'], date:null, statut:'avenir', envies:[], votes:[], participants:[]},
+  {id:'s7', titre:'Qui a Tué Jasper Van Der Meer ? (Jeu d\'Enquête)', lieu:"Chez l'un d'entre vous", infos:"Jeu de société coopératif façon dossier criminel : reconstituez la chronologie, confrontez les témoignages, démasquez le coupable. 1 à 6 joueurs, ~45 min, difficulté 2/3, dès 14 ans.", prix:"~12€ (achat unique du jeu)", lien:'', tags:['Jeu','Soirée'], date:null, statut:'avenir', envies:[], votes:[], participants:[]},
+  {id:'s13', titre:"Loisirs'Prod — Parc Multi-Activités", lieu:'Chemin de la Tête de Buis, 77340 Pontault-Combault (20 min de Paris)', infos:"Parc outdoor : paintball, accrobranche, escape game extérieur et Défi Aventure (sumo, babyfoot humain, wipeout...). Espace pique-nique et barbecue sur place.", prix:"À partir de 29€/pers", lien:'', tags:['Outdoor','Sport'], date:'à caler bientôt', statut:'avenir', dateOrder:1, envies:[], votes:[], participants:[]},
+  {id:'s15', titre:'Soirée Karaoké — Music Room chez Wanderlust', lieu:'5 impasse de la Vallée de Fécamp, Paris 12e (Porte de Charenton)', infos:"Leur Music Room propose karaoké, blind-test et jeux de danse en salle privative.", prix:"Sur devis, salle privative", lien:'', tags:['Musique','Soirée'], date:null, statut:'avenir', envies:[], votes:[], participants:[]},
+  {id:'s16', titre:'Paddle', lieu:'Base la plus proche à définir ensemble', infos:"Notre activité fétiche, déjà lancée par le groupe ! À refaire dès que le soleil est de la partie.", prix:"Variable selon la base", lien:'', tags:['Sport','Outdoor'], date:'régulier — déjà lancé !', statut:'date', envies:[], votes:[], participants:[]},
+  {id:'s17', titre:'Soirée Jazz — Rue des Lombards', lieu:'Rue des Lombards, Paris 1er (à deux pas de Châtelet)', infos:"LE quartier jazz de Paris : Le Duc des Lombards, le Sunside/Sunset ou le Baiser Salé enchaînent les concerts live tous les soirs.", prix:"Entrée ~15-25€ selon le club et le concert", lien:'', tags:['Musique','Soirée'], date:null, statut:'avenir', envies:[], votes:[], participants:[]},
+  {id:'s18', titre:'Randonnée (Destination à Choisir)', lieu:'À définir ensemble', infos:"L'itinéraire n'est pas encore choisi — le lien du carnet de rando arrive bientôt !", prix:'', lien:'', tags:['Outdoor','Sport'], date:null, statut:'avenir', envies:[], votes:[], participants:[]},
+  {id:'s19', titre:'Château de Chambord', lieu:'Chambord, Loir-et-Cher (~1h45 de Paris en voiture, ou train jusqu\'à Blois + navette)', infos:"Le plus grand château de la Loire, avec son célèbre escalier à double révolution attribué à Léonard de Vinci. Sur le domaine : balade en barque sur le canal royal, vélo, spectacles équestres et de fauconnerie. Une journée complète de dépaysement !", prix:"~21€/pers (résidents UE/EEE), gratuit pour les moins de 26 ans de l'UE", lien:'', tags:['Culture','Outdoor'], date:null, statut:'avenir', envies:[], votes:[], participants:[]},
+  {id:'s20', titre:'Château de Versailles', lieu:'Versailles, Yvelines (RER C depuis Paris, ~45 min)', infos:"Le palais de Louis XIV, la Galerie des Glaces, les jardins à la française... Coup de cœur repéré : les Grandes Eaux Nocturnes tous les samedis soirs de juin à septembre — fontaines illuminées, musique baroque et feu d'artifice sur le Grand Canal. Une édition spéciale Harry Potter est même prévue le 29 août 2026 !", prix:"Billet Passeport ~22-32€/pers selon saison (gratuit moins de 26 ans UE) ; Grandes Eaux Nocturnes ~32€/pers", lien:'', tags:['Culture','Outdoor'], date:null, statut:'avenir', envies:[], votes:[], participants:[]}
+];
+
+let data = [];
+let activeTagFilters = new Set();
+let activeStatusFilter = 'all';
+let sortByEnvie = false;
+let currentVoteId = null;
+let voteState = {name:'', coming:null, period:null, stars:0};
+
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 1800);
+}
+
+async function loadData(){
+  try{
+    const snap = await db.collection('lilith-centre-aere').doc(STORAGE_KEY).get();
+    if(snap.exists && snap.data() && snap.data().sorties){
+      data = snap.data().sorties;
+    }else{
+      data = SEED;
+      await saveData();
+    }
+  }catch(e){
+    console.error('Erreur de chargement', e);
+    data = SEED;
+  }
+  render();
+}
+
+async function saveData(){
+  for(let attempt=0; attempt<=2; attempt++){
+    try{
+      await db.collection('lilith-centre-aere').doc(STORAGE_KEY).set({
+        sorties: data,
+        updatedAt: new Date().toISOString()
+      });
+      return true;
+    }catch(e){
+      console.error('Erreur de sauvegarde (tentative '+(attempt+1)+')', e);
+      if(attempt<2) await new Promise(r=>setTimeout(r, 700));
+    }
+  }
+  toast("Sauvegarde impossible pour l'instant, réessaie dans un instant");
+  return false;
+}
+
+function avgStars(sortie){
+  if(!sortie.envies.length) return 0;
+  return sortie.envies.reduce((a,b)=>a+b.stars,0)/sortie.envies.length;
+}
+
+function starsDisplay(avg){
+  const rounded = Math.round(avg);
+  let out = '';
+  for(let i=1;i<=5;i++){ out += i<=rounded ? '★' : '☆'; }
+  return out;
+}
+
+function renderStats(){
+  const total = data.length;
+  const withDate = data.filter(s=>s.statut==='date').length;
+  const totalVotes = data.reduce((a,s)=>a+s.votes.length,0);
+  document.getElementById('statsRow').innerHTML = `
+    <div class="stat-pill"><b>${total}</b> sorties au programme</div>
+    <div class="stat-pill"><b>${withDate}</b> déjà casées</div>
+    <div class="stat-pill"><b>${totalVotes}</b> votes enregistrés</div>
+  `;
+}
+
+function renderTagFilters(){
+  const box = document.getElementById('tagFilters');
+  box.innerHTML = ALL_TAGS.map(t=>`<div class="chip tag-week ${activeTagFilters.has(t)?'active':''}" data-tag="${t}">${t}</div>`).join('');
+  box.querySelectorAll('.chip').forEach(chip=>{
+    chip.onclick = ()=>{
+      const tag = chip.dataset.tag;
+      if(activeTagFilters.has(tag)) activeTagFilters.delete(tag); else activeTagFilters.add(tag);
+      render();
+    };
+  });
+}
+
+function renderStatusFilters(){
+  document.querySelectorAll('#statusFilters .chip').forEach(chip=>{
+    chip.classList.toggle('active', chip.dataset.status===activeStatusFilter);
+    chip.onclick = ()=>{ activeStatusFilter = chip.dataset.status; render(); };
+  });
+}
+
+function updateFilterButton(filteredCount){
+  const activeCount = activeTagFilters.size + (activeStatusFilter!=='all' ? 1 : 0);
+  const badge = document.getElementById('filterBadge');
+  if(activeCount>0){ badge.style.display='inline-flex'; badge.textContent = activeCount; }
+  else{ badge.style.display='none'; }
+  document.getElementById('filterResultInline').textContent = activeCount>0 ? `${filteredCount} sortie(s)` : '';
+}
+
+function renderSoonBanner(){
+  const banner = document.getElementById('soonBanner');
+  const candidates = data.filter(s=>s.dateOrder!=null).sort((a,b)=>a.dateOrder-b.dateOrder);
+  if(candidates.length===0){ banner.style.display='none'; return; }
+  const s = candidates[0];
+  banner.style.display='flex';
+  banner.innerHTML = `🔥 Prochainement : <b>${s.titre}</b><span class="soon-date">${s.date}</span>`;
+  banner.onclick = ()=>{
+    const card = document.getElementById('card-'+s.id);
+    if(card) card.scrollIntoView({behavior:'smooth', block:'center'});
+  };
+}
+
+function openFilterModal(){ document.getElementById('filterOverlay').style.display='flex'; }
+function closeFilterModal(){ document.getElementById('filterOverlay').style.display='none'; }
+
+function render(){
+  renderStats();
+  renderTagFilters();
+  renderStatusFilters();
+
+  let filtered = data.filter(s=>{
+    if(activeStatusFilter!=='all' && s.statut!==activeStatusFilter) return false;
+    if(activeTagFilters.size>0 && !s.tags.some(t=>activeTagFilters.has(t))) return false;
+    return true;
+  });
+
+  if(sortByEnvie){
+    filtered = filtered.slice().sort((a,b)=> avgStars(b) - avgStars(a));
+  }
+  document.getElementById('sortBtn').classList.toggle('active', sortByEnvie);
+
+  renderSoonBanner();
+  updateFilterButton(filtered.length);
+
+  const list = document.getElementById('cardList');
+  if(filtered.length===0){
+    list.innerHTML = '<div class="empty">Aucune sortie ne correspond à ce filtre 🏕️</div>';
+    return;
+  }
+
+  list.innerHTML = filtered.map(s=>{
+    const avg = avgStars(s);
+    const semVotes = s.votes.filter(v=>v.period==='semaine').length;
+    const wkdVotes = s.votes.filter(v=>v.period==='weekend').length;
+    const totalV = semVotes+wkdVotes || 1;
+    const semPct = Math.round(semVotes/totalV*100);
+    const wkdPct = Math.round(wkdVotes/totalV*100);
+
+    let stampHtml = '';
+    if(s.statut==='date') stampHtml = `<div class="stamp date">${s.date}</div>`;
+    else if(s.statut==='avenir') stampHtml = `<div class="stamp avenir">à venir</div>`;
+    else if(s.statut==='a_valider') stampHtml = `<div class="stamp avalider">à valider</div>`;
+    else stampHtml = `<div class="stamp orga">en organisation</div>`;
+
+    const linkHtml = s.lien ? `<a class="tiktok-link" href="${s.lien}" target="_blank">🔗 voir sur TikTok</a><br>` : '';
+    const lieuHtml = s.lieu ? `<div class="lieu">📍 ${s.lieu}</div>` : '';
+    const infosHtml = s.infos ? `<div class="infos">${s.infos}</div>` : '';
+    const prixHtml = s.prix ? `<div class="prix">💶 ${s.prix}</div>` : '';
+
+    const participantsHtml = s.participants.length
+      ? `<div class="p-chips">${s.participants.map(p=>`<span class="p-chip">${p}</span>`).join('')}</div>`
+      : `<div class="p-chips"><span class="p-chip none">Personne ne s'est encore positionné</span></div>`;
+
+    return `
+      <div class="card" id="card-${s.id}">
+        ${stampHtml}
+        <h3>${s.titre}</h3>
+        <div class="tag-list">${s.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+        ${lieuHtml}
+        ${infosHtml}
+        ${prixHtml}
+        ${linkHtml}
+        <div class="envie-row">
+          <span class="stars" style="color:var(--coral-dark)">${starsDisplay(avg)}</span>
+          <span class="envie-label">${avg? avg.toFixed(1)+'/5 · '+s.envies.length+' vote(s)' : 'pas encore noté'}</span>
+        </div>
+        <div class="vote-row">
+          <div class="vote-bar">
+            <div class="label"><span>Semaine</span><span>${semVotes}</span></div>
+            <div class="vote-track"><div class="vote-fill sem" style="width:${semPct}%"></div></div>
+          </div>
+          <div class="vote-bar">
+            <div class="label"><span>Week-end</span><span>${wkdVotes}</span></div>
+            <div class="vote-track"><div class="vote-fill wkd" style="width:${wkdPct}%"></div></div>
+          </div>
+        </div>
+        <div class="participants">
+          <div class="lbl">Qui vient</div>
+          ${participantsHtml}
+        </div>
+        <div class="card-actions">
+          <button class="btn primary block" onclick="openVote('${s.id}')">Je me positionne</button>
+        </div>
+        ${s.statut==='a_valider' ? `<div class="card-actions"><button class="btn block" style="background:var(--green); width:100%;" onclick="validateSortie('${s.id}')">✅ Valider cette sortie</button></div>` : ''}
+      </div>
+    `;
+  }).join('');
+}
+
+/* --- VOTE FLOW (typeform style) --- */
+function openVote(id){
+  currentVoteId = id;
+  voteState = {name:'', coming:null, period:null, stars:0};
+  document.querySelectorAll('#voteComing .opt-btn').forEach(b=>b.classList.remove('chosen'));
+  document.querySelectorAll('#votePeriod .opt-btn').forEach(b=>b.classList.remove('chosen'));
+  document.querySelectorAll('#starPicker span').forEach(s=>s.classList.remove('lit'));
+  document.getElementById('voteName').value = '';
+  goToStep(1);
+  document.getElementById('voteOverlay').style.display = 'flex';
+}
+function closeVoteModal(){ document.getElementById('voteOverlay').style.display = 'none'; }
+document.getElementById('closeVote').onclick = closeVoteModal;
+
+function goToStep(n){
+  for(let i=1;i<=4;i++){
+    document.getElementById('voteStep'+i).classList.toggle('active', i===n);
+  }
+  const dots = document.getElementById('voteDots');
+  dots.innerHTML = [1,2,3,4].map(i=>`<div class="dot ${i===n?'on':''}"></div>`).join('');
+}
+function voteNext(){
+  const name = document.getElementById('voteName').value.trim();
+  if(!name){ toast('Indique ton prénom pour continuer'); return; }
+  voteState.name = name;
+  goToStep(2);
+}
+document.querySelectorAll('#voteComing .opt-btn, #votePeriod .opt-btn').forEach(btn=>{ btn.style.cursor='pointer'; });
+
+document.getElementById('voteOverlay').addEventListener('click', function(e){
+  const comingBtn = e.target.closest('#voteComing .opt-btn');
+  if(comingBtn){
+    document.querySelectorAll('#voteComing .opt-btn').forEach(b=>b.classList.remove('chosen'));
+    comingBtn.classList.add('chosen');
+    voteState.coming = comingBtn.dataset.val;
+    setTimeout(()=>goToStep(3), 200);
+    return;
+  }
+  const periodBtn = e.target.closest('#votePeriod .opt-btn');
+  if(periodBtn){
+    document.querySelectorAll('#votePeriod .opt-btn').forEach(b=>b.classList.remove('chosen'));
+    periodBtn.classList.add('chosen');
+    voteState.period = periodBtn.dataset.val;
+    setTimeout(()=>goToStep(4), 200);
+    return;
+  }
+  const star = e.target.closest('#starPicker span');
+  if(star){
+    const v = parseInt(star.dataset.v);
+    voteState.stars = v;
+    document.querySelectorAll('#starPicker span').forEach(s=>{
+      s.classList.toggle('lit', parseInt(s.dataset.v)<=v);
+    });
+  }
+});
+document.getElementById('voteName').addEventListener('keydown', function(e){
+  if(e.key==='Enter'){ voteNext(); }
+});
+
+async function submitVote(){
+  if(!voteState.stars){ toast("Choisis un nombre d'étoiles"); return; }
+  const sortie = data.find(s=>s.id===currentVoteId);
+  if(!sortie) return;
+
+  sortie.votes = sortie.votes.filter(v=>v.name!==voteState.name);
+  sortie.votes.push({name:voteState.name, period:voteState.period});
+
+  sortie.envies = sortie.envies.filter(e=>e.name!==voteState.name);
+  sortie.envies.push({name:voteState.name, stars:voteState.stars});
+
+  sortie.participants = sortie.participants.filter(p=>p!==voteState.name);
+  if(voteState.coming==='oui' || voteState.coming==='peutetre'){
+    sortie.participants.push(voteState.coming==='oui' ? voteState.name : voteState.name+' (?)');
+  }
+
+  const saved = await saveData();
+  closeVoteModal();
+  render();
+  if(saved){
+    toast("Merci " + voteState.name + ", c'est noté ! 🏕️");
+  }
+}
+
+/* --- ADD SORTIE --- */
+let newSortieTags = new Set();
+function openAdd(){
+  document.getElementById('newTitle').value='';
+  document.getElementById('newLieu').value='';
+  document.getElementById('newInfos').value='';
+  document.getElementById('newPrix').value='';
+  document.getElementById('newLink').value='';
+  document.getElementById('newDate').value='';
+  newSortieTags = new Set();
+  const grid = document.getElementById('newTagGrid');
+  grid.innerHTML = ALL_TAGS.map(t=>`<div class="tag-toggle" data-tag="${t}">${t}</div>`).join('');
+  grid.querySelectorAll('.tag-toggle').forEach(el=>{
+    el.onclick = ()=>{
+      const t = el.dataset.tag;
+      if(newSortieTags.has(t)){ newSortieTags.delete(t); el.classList.remove('on'); }
+      else{ newSortieTags.add(t); el.classList.add('on'); }
+    };
+  });
+  document.getElementById('addOverlay').style.display='flex';
+}
+document.getElementById('filterBtn').onclick = openFilterModal;
+document.getElementById('sortBtn').onclick = ()=>{ sortByEnvie = !sortByEnvie; render(); };
+document.getElementById('closeFilter').onclick = closeFilterModal;
+document.getElementById('applyFilterBtn').onclick = closeFilterModal;
+document.getElementById('resetFilters').onclick = ()=>{
+  activeTagFilters.clear();
+  activeStatusFilter = 'all';
+  render();
+};
+
+document.getElementById('fabAdd').onclick = openAdd;
+document.getElementById('closeAdd').onclick = ()=>{ document.getElementById('addOverlay').style.display='none'; };
+
+async function submitNewSortie(){
+  const titre = document.getElementById('newTitle').value.trim();
+  if(!titre){ toast('Donne un titre à la sortie'); return; }
+  const lieu = document.getElementById('newLieu').value.trim();
+  const infos = document.getElementById('newInfos').value.trim();
+  const prix = document.getElementById('newPrix').value.trim();
+  const lien = document.getElementById('newLink').value.trim();
+  const dateVal = document.getElementById('newDate').value.trim();
+  const newS = {
+    id: 's'+Date.now(),
+    titre, lieu, infos, prix, lien,
+    tags: Array.from(newSortieTags),
+    date: dateVal || null,
+    statut: 'a_valider',
+    envies: [], votes: [], participants: []
+  };
+  data.unshift(newS);
+  const saved = await saveData();
+  document.getElementById('addOverlay').style.display='none';
+  render();
+  if(saved){
+    toast('Proposée ! En attente de validation ✨');
+  }
+}
+
+async function validateSortie(id){
+  const s = data.find(x=>x.id===id);
+  if(!s) return;
+  s.statut = s.date ? 'date' : 'avenir';
+  const saved = await saveData();
+  render();
+  if(saved){
+    toast('Sortie validée, elle est officielle ! 🏕️');
+  }
+}
+
+loadData();
+</script>
+</body>
+</html>
