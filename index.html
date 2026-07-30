@@ -106,6 +106,28 @@
   }
   .stat-pill b{color:var(--coral-dark);}
 
+  /* ACCESS GATE */
+  .access-gate{
+    position:fixed; inset:0; z-index:100;
+    background: linear-gradient(150deg, var(--coral) 0%, var(--pink) 48%, var(--sky) 100%);
+    display:flex; align-items:center; justify-content:center;
+    padding:20px;
+  }
+  .gate-card{
+    background:var(--paper); border:3px solid var(--ink); border-radius:20px;
+    padding:28px 22px; max-width:340px; width:100%;
+    box-shadow:5px 5px 0 rgba(4,60,53,0.3);
+    text-align:center;
+  }
+  .gate-card h2{font-family:'Baloo 2',cursive; margin:0 0 6px; font-size:22px;}
+  .gate-sub{font-size:13px; color:var(--ink-soft); font-weight:600; margin:0 0 18px;}
+  .gate-card input{
+    width:100%; padding:12px 14px; border-radius:12px; border:2px solid var(--ink);
+    font-family:'Quicksand',sans-serif; font-size:15px; font-weight:600; margin-bottom:12px;
+    text-align:center;
+  }
+  .gate-error{color:var(--coral-dark); font-size:12.5px; font-weight:700; margin:12px 0 0;}
+
   /* TABS */
   .tab-switch{
     display:flex; gap:6px; padding:14px 16px 2px; justify-content:center;
@@ -360,6 +382,19 @@
 </head>
 <body>
 
+<div class="access-gate" id="accessGate">
+  <div class="gate-card">
+    <div class="hero-badge" style="margin:0 auto 14px;">🔒</div>
+    <h2>Accès privé</h2>
+    <p class="gate-sub">Ce carnet est réservé à Lilith Centre Aéré 🏕️</p>
+    <input type="text" id="accessCode" placeholder="Code d'accès" autocomplete="off">
+    <button class="btn primary block" style="width:100%;" onclick="checkAccessCode()">Entrer</button>
+    <p class="gate-error" id="accessError" style="display:none;">Code incorrect, réessaie !</p>
+  </div>
+</div>
+
+<div id="mainContent" style="display:none;">
+
 <div class="hero">
   <div class="hero-badge">🏕️</div>
   <p class="hero-eyebrow">L'été de folie commence ici</p>
@@ -557,6 +592,7 @@
       <h2>T'en penses quoi ?</h2>
       <div class="opt-grid" id="restoVoteInterest">
         <div class="opt-btn" data-val="teste">✅ Déjà testé, j'approuve</div>
+        <div class="opt-btn" data-val="neutre">😐 Neutre</div>
         <div class="opt-btn" data-val="envie">😍 Pas encore testé, trop envie</div>
       </div>
     </div>
@@ -608,11 +644,17 @@
     <div class="sheet-close"><span id="closeDone">✕</span></div>
     <h2 style="text-align:center; margin-top:0;">On l'a fait ! 🎉</h2>
     <div class="form-field">
+      <label>Lien de l'album photo partagé (optionnel)</label>
+      <input type="text" id="doneAlbumLink" placeholder="Ex : https://share.icloud.com/photos/...">
+    </div>
+    <div class="form-field">
       <label>Un petit souvenir à garder (optionnel)</label>
-      <input type="text" id="doneNote" placeholder="Ex : Trop drôle, Sarah a gagné le tournoi !">
+      <input type="text" id="doneNote" placeholder="Ex : Liana a perdu">
     </div>
     <button class="btn primary block" style="width:100%; margin-top:6px;" onclick="submitDone()">Ajouter aux souvenirs 📸</button>
   </div>
+</div>
+
 </div>
 
 <!-- ============================================================
@@ -940,6 +982,7 @@ function renderSouvenirs(){
         <h3>${s.titre}</h3>
         ${s.lieu ? `<div class="lieu">📍 ${s.lieu}</div>` : ''}
         ${s.souvenirNote ? `<div class="infos">💬 ${s.souvenirNote}</div>` : ''}
+        ${s.souvenirAlbumLink ? `<a class="tiktok-link" href="${s.souvenirAlbumLink}" target="_blank">📸 Voir l'album photo</a>` : ''}
         <div class="participants">
           <div class="lbl">Y étaient</div>
           <div class="p-chips">${s.participants.length ? s.participants.map(p=>`<span class="p-chip">${p}</span>`).join('') : `<span class="p-chip none">Non renseigné</span>`}</div>
@@ -952,6 +995,7 @@ function renderSouvenirs(){
 function openDone(id){
   currentDoneId = id;
   document.getElementById('doneNote').value = '';
+  document.getElementById('doneAlbumLink').value = '';
   document.getElementById('doneOverlay').style.display = 'flex';
 }
 document.getElementById('closeDone').onclick = ()=>{ document.getElementById('doneOverlay').style.display='none'; };
@@ -961,6 +1005,7 @@ async function submitDone(){
   if(!s) return;
   s.statut = 'faite';
   s.souvenirNote = document.getElementById('doneNote').value.trim();
+  s.souvenirAlbumLink = document.getElementById('doneAlbumLink').value.trim();
   s.souvenirDate = new Date().toISOString();
   const saved = await saveData();
   document.getElementById('doneOverlay').style.display='none';
@@ -1285,8 +1330,9 @@ async function submitRestoVote(){
   r.envies = r.envies.filter(e=>e.name!==restoVoteState.name);
   r.envies.push({name:restoVoteState.name, stars:restoVoteState.stars});
 
-  r.participants = r.participants.filter(p=>p!==restoVoteState.name && p!==restoVoteState.name+' (envie)');
-  r.participants.push(restoVoteState.interest==='envie' ? restoVoteState.name+' (envie)' : restoVoteState.name);
+  r.participants = r.participants.filter(p=>p!==restoVoteState.name && p!==restoVoteState.name+' (envie)' && p!==restoVoteState.name+' (neutre)');
+  const suffix = restoVoteState.interest==='envie' ? ' (envie)' : restoVoteState.interest==='neutre' ? ' (neutre)' : '';
+  r.participants.push(restoVoteState.name + suffix);
 
   const saved = await saveRestoData();
   closeRestoVoteModal();
@@ -1388,8 +1434,34 @@ async function validateSortie(id){
   }
 }
 
-loadData();
-loadRestoData();
+const ACCESS_CODE = 'sansvice';
+
+function unlockSite(){
+  document.getElementById('accessGate').style.display = 'none';
+  document.getElementById('mainContent').style.display = 'block';
+  loadData();
+  loadRestoData();
+}
+
+function checkAccessCode(){
+  const val = document.getElementById('accessCode').value.trim().toLowerCase();
+  if(val === ACCESS_CODE){
+    try{ localStorage.setItem('lilith-access', 'granted'); }catch(e){}
+    document.getElementById('accessError').style.display = 'none';
+    unlockSite();
+  }else{
+    document.getElementById('accessError').style.display = 'block';
+  }
+}
+document.getElementById('accessCode').addEventListener('keydown', function(e){
+  if(e.key==='Enter') checkAccessCode();
+});
+
+let alreadyGranted = false;
+try{ alreadyGranted = localStorage.getItem('lilith-access') === 'granted'; }catch(e){}
+if(alreadyGranted){
+  unlockSite();
+}
 </script>
 </body>
 </html>
