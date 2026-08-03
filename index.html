@@ -468,7 +468,7 @@
 
     <div class="step active" id="voteStep1">
       <h2>Ton prénom ?</h2>
-      <input type="text" id="voteName" placeholder="Ex : Maimouna">
+      <input type="text" id="voteName" placeholder="   ">
       <button class="btn primary block" style="width:100%" onclick="voteNext()">Suivant →</button>
     </div>
 
@@ -520,8 +520,8 @@
       <input type="text" id="newPrix" placeholder="Ex : ~20€/pers">
     </div>
     <div class="form-field">
-      <label>Lien TikTok (optionnel)</label>
-      <input type="text" id="newLink" placeholder="https://tiktok.com/...">
+      <label>Lien (optionnel)</label>
+      <input type="text" id="newLink" placeholder="https://...">
     </div>
     <div class="form-field">
       <label>Date (optionnel — laisser vide si pas encore fixée)</label>
@@ -563,7 +563,7 @@
 
     <div class="step active" id="restoVoteStep1">
       <h2>Ton prénom ?</h2>
-      <input type="text" id="restoVoteName" placeholder="Ex : Maimouna">
+      <input type="text" id="restoVoteName" placeholder="   ">
       <button class="btn primary block" style="width:100%" onclick="restoVoteNext()">Suivant →</button>
     </div>
 
@@ -628,16 +628,12 @@
     </div>
     <div class="form-field">
       <label>Un petit souvenir à garder (optionnel)</label>
-      <input type="text" id="doneNote" placeholder="Ex : Liana a perdu">
+      <input type="text" id="doneNote" placeholder="...">
     </div>
     <button class="btn primary block" style="width:100%; margin-top:6px;" onclick="submitDone()">Ajouter aux souvenirs 📸</button>
   </div>
 </div>
 
-<!-- ============================================================
-     CONFIG FIREBASE — à remplir avec tes propres identifiants
-     (Console Firebase > Paramètres du projet > Vos applications)
-     ============================================================ -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 <script>
@@ -671,7 +667,7 @@ const SEED = [
 ];
 
 const RESTO_STORAGE_KEY = 'restos-lilith-v1';
-const RESTO_ALL_TAGS = ['Rooftop','Brunch','Italien','Asiatique','Fast-food','Végé','Dessert / Café','Bar à cocktails'];
+const RESTO_ALL_TAGS = ['Brunch','Italien','Asiatique','Fast-food','Dessert / Café'];
 const RESTO_SEED = [];
 
 let restoData = [];
@@ -882,7 +878,7 @@ function render(){
     else if(s.statut==='a_valider') stampHtml = `<div class="stamp avalider">à valider</div>`;
     else stampHtml = `<div class="stamp orga">en organisation</div>`;
 
-    const linkHtml = s.lien ? `<a class="tiktok-link" href="${s.lien}" target="_blank">🔗 voir sur TikTok</a><br>` : '';
+    const linkHtml = s.lien ? `<a class="tiktok-link" href="${s.lien}" target="_blank">🔗 voir le lien</a><br>` : '';
     const lieuHtml = s.lieu ? `<div class="lieu">📍 ${s.lieu}</div>` : '';
     const infosHtml = s.infos ? `<div class="infos">${s.infos}</div>` : '';
     const prixHtml = s.prix ? `<div class="prix">💶 ${s.prix}</div>` : '';
