@@ -105,29 +105,6 @@
     box-shadow:2px 2px 0 rgba(4,60,53,0.15);
   }
   .stat-pill b{color:var(--coral-dark);}
-
-  /* ACCESS GATE */
-  .access-gate{
-    position:fixed; inset:0; z-index:100;
-    background: linear-gradient(150deg, var(--coral) 0%, var(--pink) 48%, var(--sky) 100%);
-    display:flex; align-items:center; justify-content:center;
-    padding:20px;
-  }
-  .gate-card{
-    background:var(--paper); border:3px solid var(--ink); border-radius:20px;
-    padding:28px 22px; max-width:340px; width:100%;
-    box-shadow:5px 5px 0 rgba(4,60,53,0.3);
-    text-align:center;
-  }
-  .gate-card h2{font-family:'Baloo 2',cursive; margin:0 0 6px; font-size:22px;}
-  .gate-sub{font-size:13px; color:var(--ink-soft); font-weight:600; margin:0 0 18px;}
-  .gate-card input{
-    width:100%; padding:12px 14px; border-radius:12px; border:2px solid var(--ink);
-    font-family:'Quicksand',sans-serif; font-size:15px; font-weight:600; margin-bottom:12px;
-    text-align:center;
-  }
-  .gate-error{color:var(--coral-dark); font-size:12.5px; font-weight:700; margin:12px 0 0;}
-
   /* TABS */
   .tab-switch{
     display:flex; gap:6px; padding:14px 16px 2px; justify-content:center;
@@ -395,17 +372,6 @@
 </style>
 </head>
 <body>
-
-<div class="access-gate" id="accessGate">
-  <div class="gate-card">
-    <div class="hero-badge" style="margin:0 auto 14px;">🔒</div>
-    <h2>Accès privé</h2>
-    <p class="gate-sub">Ce carnet est réservé à Lilith Centre Aéré 🏕️</p>
-    <input type="text" id="accessCode" placeholder="Code d'accès" autocomplete="off">
-    <button class="btn primary block" style="width:100%;" onclick="checkAccessCode()">Entrer</button>
-    <p class="gate-error" id="accessError" style="display:none;">Code incorrect, réessaie !</p>
-  </div>
-</div>
 
 <div id="mainContent" style="display:none;">
 
@@ -1489,35 +1455,6 @@ async function removeVote(sortieId, displayName){
   if(saved){
     toast('Vote retiré 🗑️');
   }
-}
-
-const ACCESS_CODE = 'sansvice';
-
-function unlockSite(){
-  document.getElementById('accessGate').style.display = 'none';
-  document.getElementById('mainContent').style.display = 'block';
-  loadData();
-  loadRestoData();
-}
-
-function checkAccessCode(){
-  const val = document.getElementById('accessCode').value.trim().toLowerCase();
-  if(val === ACCESS_CODE){
-    try{ localStorage.setItem('lilith-access', 'granted'); }catch(e){}
-    document.getElementById('accessError').style.display = 'none';
-    unlockSite();
-  }else{
-    document.getElementById('accessError').style.display = 'block';
-  }
-}
-document.getElementById('accessCode').addEventListener('keydown', function(e){
-  if(e.key==='Enter') checkAccessCode();
-});
-
-let alreadyGranted = false;
-try{ alreadyGranted = localStorage.getItem('lilith-access') === 'granted'; }catch(e){}
-if(alreadyGranted){
-  unlockSite();
 }
 </script>
 </body>
