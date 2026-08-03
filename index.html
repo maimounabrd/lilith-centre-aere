@@ -105,6 +105,7 @@
     box-shadow:2px 2px 0 rgba(4,60,53,0.15);
   }
   .stat-pill b{color:var(--coral-dark);}
+
   /* TABS */
   .tab-switch{
     display:flex; gap:6px; padding:14px 16px 2px; justify-content:center;
@@ -373,8 +374,6 @@
 </head>
 <body>
 
-<div id="mainContent" style="display:none;">
-
 <div class="hero">
   <div class="hero-badge">🏕️</div>
   <p class="hero-eyebrow">L'été de folie commence ici</p>
@@ -469,7 +468,7 @@
 
     <div class="step active" id="voteStep1">
       <h2>Ton prénom ?</h2>
-      <input type="text" id="voteName" placeholder="Ex : Lilith">
+      <input type="text" id="voteName" placeholder="Ex : Maimouna">
       <button class="btn primary block" style="width:100%" onclick="voteNext()">Suivant →</button>
     </div>
 
@@ -521,8 +520,8 @@
       <input type="text" id="newPrix" placeholder="Ex : ~20€/pers">
     </div>
     <div class="form-field">
-      <label>Lien (optionnel)</label>
-      <input type="text" id="newLink" placeholder="https://....">
+      <label>Lien TikTok (optionnel)</label>
+      <input type="text" id="newLink" placeholder="https://tiktok.com/...">
     </div>
     <div class="form-field">
       <label>Date (optionnel — laisser vide si pas encore fixée)</label>
@@ -564,7 +563,7 @@
 
     <div class="step active" id="restoVoteStep1">
       <h2>Ton prénom ?</h2>
-      <input type="text" id="restoVoteName" placeholder="Ex : Lilith">
+      <input type="text" id="restoVoteName" placeholder="Ex : Maimouna">
       <button class="btn primary block" style="width:100%" onclick="restoVoteNext()">Suivant →</button>
     </div>
 
@@ -629,12 +628,10 @@
     </div>
     <div class="form-field">
       <label>Un petit souvenir à garder (optionnel)</label>
-      <input type="text" id="doneNote" placeholder=" ">
+      <input type="text" id="doneNote" placeholder="Ex : Liana a perdu">
     </div>
     <button class="btn primary block" style="width:100%; margin-top:6px;" onclick="submitDone()">Ajouter aux souvenirs 📸</button>
   </div>
-</div>
-
 </div>
 
 <!-- ============================================================
@@ -885,7 +882,7 @@ function render(){
     else if(s.statut==='a_valider') stampHtml = `<div class="stamp avalider">à valider</div>`;
     else stampHtml = `<div class="stamp orga">en organisation</div>`;
 
-    const linkHtml = s.lien ? `<a class="tiktok-link" href="${s.lien}" target="_blank">🔗 voir le lien</a><br>` : '';
+    const linkHtml = s.lien ? `<a class="tiktok-link" href="${s.lien}" target="_blank">🔗 voir sur TikTok</a><br>` : '';
     const lieuHtml = s.lieu ? `<div class="lieu">📍 ${s.lieu}</div>` : '';
     const infosHtml = s.infos ? `<div class="infos">${s.infos}</div>` : '';
     const prixHtml = s.prix ? `<div class="prix">💶 ${s.prix}</div>` : '';
@@ -1456,6 +1453,9 @@ async function removeVote(sortieId, displayName){
     toast('Vote retiré 🗑️');
   }
 }
+
+loadData();
+loadRestoData();
 </script>
 </body>
 </html>
